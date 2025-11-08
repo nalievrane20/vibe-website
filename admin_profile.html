@@ -1,0 +1,165 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Profile</title>
+    <link href="https://fonts.cdnfonts.com/css/myriad-pro" rel="stylesheet">
+    <link rel="stylesheet" href="css/dashboard-style.css">
+    <link rel="stylesheet" href="css/profile-style.css">
+    
+
+
+</head>
+
+<body>
+    <!-- 🌐 Navigation Bar -->
+    <nav>
+        <div class="tabs">
+            <a href="index.html">Home</a>
+            <a href="about.html">About Us</a>
+            <a href="developers.html">Developers</a>
+        </div>
+    </nav>
+
+    <!-- 🧭 Sidebar -->
+    <div class="sidebar">
+        <div class="profile">
+            <img src="\Assets\user_img.png" alt="Profile">
+            <h2 id="usernameDisplay">User</h2>
+        </div>
+
+        <a href="admin_dashboard.html" class="sd_button">Dashboard</a>
+        <a href="admin_profile.html" class="sd_button">Profile</a>
+
+        <div class="filter_title">
+            <h3>Course Filter</h3>
+        </div><br>
+        <a href="create_event.html" class="sd_button">Create Events</a>
+         <!--<a href="manage_events.html" class="sd_button">Manage Events</a>-->
+        <a href="#" class="sd_button">Attendancce Checker</a>
+
+        <div class="signout">
+            <button onclick="signOut()">Sign Out</button>
+        </div>
+    </div>
+
+    <!-- 🧾 Main Content -->
+    <div class="main-content">
+        <!-- 🔍 Search Bar -->
+
+
+        <!-- 📅 Upcoming Events Section -->
+        <div class="body-content">
+
+      
+
+           
+            <div class="user">
+                <div class="profile">
+                    <img src="\Assets\user_img.png" alt="Profile">
+                    <h2 id="usernameDisplay">User</h2>
+                    <hr>
+                </div>
+
+
+                <div class="input-field">
+                    <div class="information">
+                        <h3>Basic Information</h3>
+                        <input type="text" id="username" placeholder="Username" required>
+                        <input type="email" id="email" placeholder="Email" required>
+                        <input type="text" id="studentnumber" placeholder="Student Number" required>
+                        <input type="text" id="contactnumber" placeholder="Contact Number" required>
+                    </div>
+
+
+                    <div class="information">
+                        <h3>Additional Information</h3>
+                        <input type="text" id="username" placeholder="Username" required>
+                        <input type="email" id="email" placeholder="Email" required>
+                        <input type="text" id="studentnumber" placeholder="Student Number" required>
+                        <input type="text" id="contactnumber" placeholder="Contact Number" required>
+                    </div>
+                </div>
+                 
+                <div class="savecancel">
+                <button onclick="save()">Save</button>
+                <button onclick="cancel()">Cancel</button>
+                <div>
+            </div>
+            </div>
+      
+
+
+
+      
+
+
+
+    <!-- 💻 Script -->
+    <script>
+        const username = localStorage.getItem("loggedInUser");
+        if (!username) {
+            window.location.href = "student_login.html";
+        } else {
+            document.getElementById("usernameDisplay").textContent = username;
+        }
+
+        function signOut() {
+            localStorage.removeItem("loggedInUser");
+            window.location.href = "student_login.html";
+        }
+
+        // 🔍 Search & Highlight Function
+        function search() {
+            const query = document.getElementById("searchInput").value.trim();
+            const content = document.querySelector(".main-content");
+
+            // Remove old highlights
+            content.querySelectorAll("mark").forEach(mark => {
+                const parent = mark.parentNode;
+                parent.replaceChild(document.createTextNode(mark.textContent), mark);
+            });
+
+            if (!query) {
+                alert("Please enter a search term.");
+                return;
+            }
+
+            const regex = new RegExp(`(${query})`, "gi");
+            const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, null, false);
+
+            let found = false;
+            while (walker.nextNode()) {
+                const node = walker.currentNode;
+                if (node.nodeValue.match(regex)) {
+                    found = true;
+                    const span = document.createElement("span");
+                    span.innerHTML = node.nodeValue.replace(regex, "<mark>$1</mark>");
+                    node.parentNode.replaceChild(span, node);
+                }
+            }
+
+            if (found) {
+                const firstMark = content.querySelector("mark");
+                if (firstMark) firstMark.scrollIntoView({ behavior: "smooth", block: "center" });
+            } else {
+                alert("No matches found.");
+            }
+        }
+
+        function submitComment() {
+            const comment = document.getElementById("commentInput").value.trim();
+            const message = document.getElementById("commentMessage");
+
+            if (comment) {
+                message.style.display = "block";
+                document.getElementById("commentInput").value = "";
+                setTimeout(() => message.style.display = "none", 2000);
+            } else {
+                alert("Please write a comment before submitting.");
+            }
+        }
+    </script>
+</body>
+</html>

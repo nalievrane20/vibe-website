@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account</title>
+  <link href="https://fonts.cdnfonts.com/css/myriad-pro" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav>
+    <div class="tabs">
+        <a href="index.html">Home</a>
+        <a href="about.html">About Us</a>
+        <a href="developers.html">Developers</a>
+    </div>
+  </nav>
+
+  <div class="content">
+    <div class="card">
+      <h1>Create Account</h1>
+      <input type="text" id="username" placeholder="Username" required>
+      <input type="email" id="email" placeholder="Email" required>
+      <input type="password" id="password" placeholder="Password" required>
+      <input type="password" id="repassword" placeholder="Re-enter Password" required>
+      <button onclick="createAccount()">Submit</button>
+      <p class="message" id="message"></p>
+      <div class="login-link">Already have an account? <a href="student_login.html">Login</a></div>
+      <div class="back-icon"><a href="index.html">&#8592; Back</a></div>
+    </div>
+<img src="/Assets/vibe_logo.png" alt="Logo" class="logo">
+  </div>
+
+  <script>
+    function createAccount() {
+      const username = document.getElementById("username").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const repassword = document.getElementById("repassword").value;
+      const message = document.getElementById("message");
+
+      if (!username || !email || !password || !repassword) {
+        message.textContent = "All fields are required.";
+        return;
+      }
+
+      if (password !== repassword) {
+        message.textContent = "Passwords do not match.";
+        return;
+      }
+
+      // Check if account already exists
+      const existingUser = localStorage.getItem(username);
+      if (existingUser) {
+        message.textContent = "Username already exists.";
+        return;
+      }
+
+      // Save user data
+      const userData = { email, password };
+      localStorage.setItem(username, JSON.stringify(userData));
+
+      message.style.color = "green";
+      message.textContent = "Account created successfully! Redirecting to login...";
+      setTimeout(() => {
+        window.location.href = "student_login.html";
+      }, 2000);
+    }
+  </script>
+</body>
+</html>

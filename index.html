@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VIBE Login</title>
+  <link href="https://fonts.cdnfonts.com/css/myriad-pro" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+
+
+</head>
+
+<body>
+  <nav>
+      <div class="tabs">
+          <a href="index.html">Home</a>
+          <a href="about.html">About Us</a>
+          <a href="developers.html">Developers</a>
+      </div>
+  </nav>
+
+  <div class="content">
+    <div class="card">
+      <h1>Welcome to VIBE!</h1>
+      <p>Login below to access your student dashboard.</p>
+
+      <!-- Student Login Form -->
+      <div class="input-group">
+     
+        <input type="text" id="username" placeholder="Enter your username" required>
+      </div>
+
+      <div class="input-group">
+   
+        <input type="password" id="password" placeholder="Enter your password" required>
+      </div>
+
+      <button id="loginBtn">Login</button>
+      <p class="message" id="message"></p>
+      
+      <!--<p style="margin-top:20px;">Are you an admin? <a href="admin_login.html">Login here</a></p>-->
+    </div>
+    <img src="/Assets/vibe_logo.png" alt="Logo" class="logo">
+  </div>
+
+ <script>
+document.getElementById("loginBtn").addEventListener("click", function() {
+  const input = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const message = document.getElementById("message");
+
+  if (!input || !password) {
+    message.style.color = "red";
+    message.textContent = "Please enter both username/email and password.";
+    return;
+  }
+
+  let accounts = JSON.parse(localStorage.getItem("studentAccounts")) || [];
+  if (!Array.isArray(accounts)) {
+    message.style.color = "red";
+    message.textContent = "Account data corrupted. Please contact admin.";
+    return;
+  }
+
+  // 🔑 Find matching user by username OR email
+  const user = accounts.find(acc => 
+    (acc.username.toLowerCase() === input.toLowerCase() || acc.email.toLowerCase() === input.toLowerCase())
+    && acc.password === password
+  );
+
+  if (user) {
+    // Save logged-in student
+    localStorage.setItem("loggedInStudent", JSON.stringify(user));
+    message.style.color = "green";
+    message.textContent = "✅ Login successful! Redirecting...";
+
+    setTimeout(() => {
+      window.location.href = "dashboard.html"; // Redirect to dashboard.html
+    }, 1000);
+  } else {
+    message.style.color = "red";
+    message.textContent = "User not found or password incorrect.";
+  }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Students</title>
+  <link href="https://fonts.cdnfonts.com/css/myriad-pro" rel="stylesheet">
+  <link rel="stylesheet" href="css/dashboard-style.css">
+  <link rel="stylesheet" href="css/profile-style.css">
+
+  <style>
+    .content { margin-left: 0; padding: 20px; }
+    .card {
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      max-width: 700px;
+      margin: 20px auto;
+      padding: 30px;
+    }
+    .card h1 { text-align: center; margin-bottom: 20px; }
+    .input-group { margin-bottom: 15px; }
+    .input-group label { display: block; margin-bottom: 6px; font-weight: 600; }
+    .input-group input, .input-group select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    .btn-container { text-align: center; margin-top: 20px; }
+    .btn-container button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold;
+      color: white;
+      background-color: #0078d7;
+    }
+    .btn-container button:hover { background-color: #005fa3; }
+    .message { text-align: center; margin-top: 15px; font-weight: bold; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 25px;
+    }
+    table th, table td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: left;
+    }
+    table th {
+      background-color: #0078d7;
+      color: white;
+    }
+    .delete-btn {
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .delete-btn:hover { background-color: #c0392b; }
+  </style>
+</head>
+
+<body>
+  <!-- 🌐 Navigation Bar -->
+  <nav>
+    <div class="tabs">
+      <a href="index.html">Home</a>
+      <a href="about.html">About Us</a>
+      <a href="developers.html">Developers</a>
+    </div>
+  </nav>
+
+  <!-- 🧭 Sidebar -->
+  <div class="sidebar">
+    <div class="profile">
+      <img src="Assets/user_img.png" alt="Profile">
+      <h2 id="usernameDisplay">Admin</h2>
+    </div>
+
+    <a href="admin_dashboard.html" class="sd_button">Dashboard</a>
+    <a href="manage_students.html" class="sd_button active">Manage Students</a>
+
+    <div class="filter_title">
+      <h3>Course Filter</h3>
+    </div><br>
+    <a href="create_event.html" class="sd_button">Create Events</a>
+    <a href="#" class="sd_button">Attendance Checker</a>
+
+    <div class="signout">
+      <button onclick="signOut()">Sign Out</button>
+    </div>
+  </div>
+
+  <!-- 🧾 Main Content -->
+  <div class="main-content">
+    <div class="card">
+      <h1>Manage Students</h1>
+
+      <div class="input-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="Enter student's username" required>
+      </div>
+
+      <div class="input-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="Enter student's email" required>
+      </div>
+
+      <div class="input-group">
+        <label for="studentnumber">Student Number</label>
+        <input type="number" id="studentnumber" placeholder="Enter student number" required min="1" step="1">
+      </div>
+
+      <div class="input-group">
+        <label for="contactnumber">Contact Number</label>
+        <input type="text" id="contactnumber" placeholder="Enter contact number" required>
+      </div>
+
+      <div class="input-group">
+        <label for="course">Course</label>
+        <select id="course" required>
+          <option value="">Select Course</option>
+          <option value="Infotech">Infotech</option>
+          <option value="Criminology">Criminology</option>
+          <option value="Education">Education</option>
+          <option value="Accountancy">Accountancy</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter a password" required>
+      </div>
+
+      <div class="btn-container">
+        <button id="createAccountBtn">Create Account</button>
+      </div>
+
+      <p class="message" id="message" aria-live="polite"></p>
+
+      <!-- 📋 Student List -->
+      <h2 style="margin-top:30px;">Student Accounts</h2>
+      <table id="studentTable">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Student No.</th>
+            <th>Course</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="studentTableBody">
+          <tr><td colspan="5" style="text-align:center;">No student accounts yet.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 💻 Script -->
+  <script>
+    // Show default admin name
+    const adminUser = localStorage.getItem("loggedInUser") || "Admin";
+    document.getElementById("usernameDisplay").textContent = adminUser;
+
+    function getAccounts() {
+      try {
+        return JSON.parse(localStorage.getItem("studentAccounts")) || [];
+      } catch (e) {
+        console.error("Error parsing studentAccounts:", e);
+        return [];
+      }
+    }
+
+    function setAccounts(accounts) {
+      localStorage.setItem("studentAccounts", JSON.stringify(accounts));
+    }
+
+    // 🎯 Create Account
+    document.getElementById("createAccountBtn").addEventListener("click", () => {
+      const username = document.getElementById("username").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const studentnumber = Number(document.getElementById("studentnumber").value.trim());
+      const contactnumber = document.getElementById("contactnumber").value.trim();
+      const course = document.getElementById("course").value;
+      const password = document.getElementById("password").value.trim();
+      const message = document.getElementById("message");
+
+      if (!username || !email || !studentnumber || !contactnumber || !course || !password) {
+        message.style.color = "red";
+        message.textContent = "Please fill in all fields.";
+        return;
+      }
+
+      const accounts = getAccounts();
+
+      if (accounts.some(acc => acc.username === username || acc.email === email || acc.studentnumber === studentnumber)) {
+        message.style.color = "red";
+        message.textContent = "Account already exists with this username, email, or student number.";
+        return;
+      }
+
+      const newAccount = { username, email, studentnumber, contactnumber, course, password };
+      accounts.push(newAccount);
+      setAccounts(accounts);
+
+      message.style.color = "green";
+      message.textContent = "✅ Student account created successfully!";
+
+      document.querySelectorAll("input, select").forEach(el => el.value = "");
+      renderStudents();
+    });
+
+    // 🗑️ Delete Account
+    function deleteAccount(studentnumber) {
+      if (!confirm("Are you sure you want to delete this student account?")) return;
+      const accounts = getAccounts().filter(acc => Number(acc.studentnumber) !== Number(studentnumber));
+      setAccounts(accounts);
+      renderStudents();
+    }
+
+    // 📋 Render Students
+    function renderStudents() {
+      const tbody = document.getElementById("studentTableBody");
+      const accounts = getAccounts();
+
+      if (accounts.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No student accounts yet.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = accounts.map(acc => `
+        <tr>
+          <td>${acc.username}</td>
+          <td>${acc.email}</td>
+          <td>${acc.studentnumber}</td>
+          <td>${acc.course}</td>
+          <td><button class="delete-btn" onclick="deleteAccount('${acc.studentnumber}')">Delete</button></td>
+        </tr>
+      `).join("");
+    }
+
+    // Render initial list
+    renderStudents();
+
+    // 🚪 Sign out (does not redirect anymore)
+    function signOut() {
+      localStorage.removeItem("loggedInUser");
+      alert("Signed out successfully.");
+    }
+  </script>
+</body>
+</html>

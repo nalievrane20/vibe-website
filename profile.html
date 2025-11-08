@@ -1,0 +1,94 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile</title>
+  <link href="https://fonts.cdnfonts.com/css/myriad-pro" rel="stylesheet">
+  <link rel="stylesheet" href="css/dashboard-style.css">
+  <link rel="stylesheet" href="css/profile-style.css">
+</head>
+
+<body>
+  <!-- 🌐 Navigation Bar -->
+  <nav>
+    <div class="tabs">
+      <a href="index.html">Home</a>
+      <a href="about.html">About Us</a>
+      <a href="developers.html">Developers</a>
+    </div>
+  </nav>
+
+  <!-- 🧭 Sidebar -->
+  <div class="sidebar">
+    <div class="profile">
+      <img src="Assets/user_img.png" alt="Profile">
+      <h2 id="usernameDisplay">User</h2>
+    </div>
+
+    <a href="dashboard.html" class="sd_button">Dashboard</a>
+    <a href="profile.html" class="sd_button active">Profile</a>
+
+    <div class="filter_title">
+      <h3>Course Filter</h3>
+    </div>
+    <a href="#" class="sd_button">Infotech</a>
+    <a href="#" class="sd_button">Criminology</a>
+    <a href="#" class="sd_button">Education</a>
+    <a href="#" class="sd_button">Accountancy</a>
+
+    <div class="signout">
+      <button onclick="signOut()">Sign Out</button>
+    </div>
+  </div>
+
+  <!-- 🧾 Main Content -->
+  <div class="main-content">
+    <div class="body-content">
+      <div class="user">
+        <div class="profile">
+          <img src="Assets/user_img.png" alt="Profile">
+          <h2 id="profileName">User's Profile</h2>
+          <hr>
+        </div>
+
+        <div class="information">
+          <h3>Basic Information</h3>
+          <p><strong>Username:</strong> <span id="profileUsername">-</span></p>
+          <p><strong>Email:</strong> <span id="profileEmail">-</span></p>
+          <p><strong>Student Number:</strong> <span id="profileStudentNumber">-</span></p>
+          <p><strong>Contact Number:</strong> <span id="profileContactNumber">-</span></p>
+        </div>
+
+        <div class="information">
+          <h3>Course Information</h3>
+          <p><strong>Course:</strong> <span id="profileCourse">-</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const student = JSON.parse(localStorage.getItem("loggedInStudent"));
+    if (!student) {
+      alert("Please log in first.");
+      window.location.href = "index.html";
+    } else {
+      // Display user info
+      document.getElementById("usernameDisplay").textContent = student.username || "User";
+      document.getElementById("profileName").textContent = `${student.username}'s Profile` || "User's Profile";
+      document.getElementById("profileUsername").textContent = student.username || "-";
+      document.getElementById("profileEmail").textContent = student.email || "-";
+      document.getElementById("profileStudentNumber").textContent = student.studentnumber || "-";
+      document.getElementById("profileContactNumber").textContent = student.contactnumber || "-";
+      document.getElementById("profileCourse").textContent = student.course || "-";
+    }
+
+    function signOut() {
+      localStorage.removeItem("loggedInStudent");
+      alert("You have signed out.");
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+</html>

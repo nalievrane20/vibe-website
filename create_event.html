@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Profile - Create Events</title>
+  <link href="https://fonts.cdnfonts.com/css/myriad-pro" rel="stylesheet">
+  <link rel="stylesheet" href="css/create-event-style.css">
+  <link rel="stylesheet" href="css/profile-style.css">
+  
+</head>
+
+<body>
+  <!-- 🌐 Navigation Bar -->
+  <nav>
+    <div class="tabs">
+      <a href="index.html">Home</a>
+      <a href="about.html">About Us</a>
+      <a href="developers.html">Developers</a>
+    </div>
+  </nav>
+
+  <!-- 🧭 Sidebar -->
+  <div class="sidebar">
+    <div class="profile">
+      <img src="Assets/user_img.png" alt="Profile">
+      <h2 id="usernameDisplay">User</h2>
+    </div>
+
+    <a href="admin_dashboard.html" class="sd_button">Dashboard</a>
+    <a href="manage_students.html" class="sd_button">Manage Students</a>
+
+    <div class="filter_title">
+      <h3>Course Filter</h3>
+    </div><br>
+    <a href="#" class="sd_button active">Create Events</a>
+     <!--<a href="manage_events.html" class="sd_button">Manage Events</a>-->
+    <a href="#" class="sd_button">Attendancce Checker</a>
+
+    <div class="signout">
+      <button onclick="signOut()">Sign Out</button>
+    </div>
+  </div>
+
+  <!-- 🧾 Main Content -->
+  <div class="content">
+    <div class="card">
+      <h1>Create Event</h1>
+      <div class="row1">
+        <input type="text" id="eventName" placeholder="Event Name" required>
+        <input type="date" id="eventDate" required>
+        <input type="time" id="eventTime" required>
+      </div>
+
+      <div class="row2">
+        <input type="text" id="eventCourse" placeholder="Course" required>
+        <select id="eventType" required>
+          <option value="">Select Type</option>
+          <option value="Online">Online</option>
+          <option value="Face to Face">Face to Face</option>
+        </select>
+      </div>
+
+      <div class="row3">
+        <input type="text" id="eventPlace" placeholder="Place" required>
+        <input type="number" id="eventCapacity" placeholder="Capacity" required>
+      </div>
+
+      <div class="row3">
+        <textarea id="eventDescription" placeholder="Description" rows="3"></textarea>
+      </div>
+
+      <div class="row3">
+        <label for="eventImage">Event Image:</label>
+        <input type="file" id="eventImage" accept="image/*">
+        <!-- 👇 removed the <img> preview -->
+      </div>
+
+      <button id="createEventBtn">Create Event</button>
+      <p class="message" id="message" aria-live="polite"></p>
+      <div class="back" style="margin-top:12px;">
+        <a href="admin_dashboard.html">&#8592; Back to Dashboard</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 💻 Script -->
+  <script>
+    // 🧠 Generate unique ID
+    function generateId() {
+      return 'evt_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+    }
+
+    function getEvents() {
+      try {
+        return JSON.parse(localStorage.getItem('events')) || [];
+      } catch (e) {
+        console.error('Could not parse events from localStorage', e);
+        return [];
+      }
+    }
+
+    function setEvents(arr) {
+      localStorage.setItem('events', JSON.stringify(arr));
+    }
+
+    // 🖼️ Handle image (no preview)
+    const imageInput = document.getElementById("eventImage");
+    let imageBase64 = "";
+
+    imageInput.addEventListener("change", function() {
+      const file = imageInput.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          imageBase64 = e.target.result; // Store base64 data silently
+        };
+        reader.readAsDataURL(file);
+      } else {
+        imageBase64 = "";
+      }
+    });
+
+    // 🎯 Create Event
+    document.getElementById("createEventBtn").addEventListener("click", createEvent);
+
+    function createEvent() {
+      const name = document.getElementById("eventName").value.trim();
+      const date = document.getElementById("eventDate").value;
+      const time = document.getElementById("eventTime").value;
+      const course = document.getElementById("eventCourse").value.trim();
+      const type = document.getElementById("eventType").value;
+      const place = document.getElementById("eventPlace").value.trim();
+      const capacity = document.getElementById("eventCapacity").value.trim();
+      const description = document.getElementById("eventDescription").value.trim();
+      const message = document.getElementById("message");
+
+      message.style.color = "red";
+
+      if (!name || !date || !time || !course || !type || !place || !capacity) {
+        message.textContent = "Please fill in all required fields.";
+        return;
+      }
+
+      const newEvent = {
+        id: generateId(),
+        name,
+        date,
+        time,
+        course,
+        type,
+        place,
+        capacity,
+        description,
+        image: imageBase64 || ""
+      };
+
+      const events = getEvents();
+      events.unshift(newEvent);
+      setEvents(events);
+
+      message.style.color = "green";
+      message.textContent = "Event created successfully! Redirecting to dashboard...";
+
+      document.querySelectorAll("input, textarea").forEach(el => el.value = "");
+      imageBase64 = "";
+
+      setTimeout(() => {
+        window.location.href = "admin_dashboard.html";
+      }, 1000);
+    }
+
+    // 🚪 Sign out
+    function signOut() {
+      localStorage.removeItem("loggedInUser");
+      window.location.href = "student_login.html";
+    }
+  </script>
+</body>
+</html>
